@@ -4,14 +4,16 @@ import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import org.json.simple.JSONValue
 import org.jsoup.Jsoup
+import tired.coder.gogo_anime_scraper.enums.ReleaseType
+import tired.coder.gogo_anime_scraper.enums.toGogoAnimeType
 import tired.coder.gogo_anime_scraper.models.VideoModel
 import tired.coder.lib.models.RecentAnimeModel
 
 class GogoAnimeScraper {
     private val baseUrl = "https://gogoanime.pe/";
-    fun getRecentReleases(): List<RecentAnimeModel> {
+    fun getRecentReleases(type : ReleaseType): List<RecentAnimeModel> {
         val recentAnimes = mutableListOf<RecentAnimeModel>()
-        val gogoAnimePage = Jsoup.connect(baseUrl).get()
+        val gogoAnimePage = Jsoup.connect("https://ajax.gogo-load.com/ajax/page-recent-release.html?page=1&type=${type.toGogoAnimeType()}").get()
         val recentAnimeLis = gogoAnimePage.getElementsByClass("last_episodes loaddub").first()!!
             .getElementsByTag("ul").first()!!.getElementsByTag("li")
         for (recentAnimeLi in recentAnimeLis) {

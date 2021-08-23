@@ -1,0 +1,16 @@
+package tired.coder.animewatcher
+
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+
+open class BaseViewModel<T>(initialState: T) : ViewModel() {
+    protected  val _screenLiveData  = MutableLiveData<T>(initialState)
+    public val screenLiveData :LiveData<T> = _screenLiveData
+
+    open fun onStateChange(newState : T){
+        _screenLiveData.value =newState!!
+    }
+}
