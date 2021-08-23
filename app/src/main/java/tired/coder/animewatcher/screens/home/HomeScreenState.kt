@@ -9,9 +9,11 @@ data class HomeScreenState(
  private   val dubAnimeList : State<List<RecentAnimeModel>> = mutableStateOf(emptyList()),
   private  val subAnimeList : State<List<RecentAnimeModel>> = mutableStateOf(emptyList()),
    private val recentWatchedAnimeList : State<List<RecentAnimeModel>> = mutableStateOf(emptyList()),
-   private val isSearching : Boolean = false,
+   val isSearching : Boolean = false,
+    val isSearchingLoading : Boolean = true,
     private val isDubLoading : Boolean = true,
    private val isSubLoading : Boolean =true ,
+    val searchText : String  = "",
    private val isRecentLoading : Boolean= true,
 ){
     val isLoading : Boolean
@@ -22,6 +24,8 @@ data class HomeScreenState(
             return true
         else if(currentIndex ==2 && isRecentLoading)
         return true
+        else if(isSearching && isSearchingLoading)
+            return true
         return false
     }
     val animeList: List<RecentAnimeModel>

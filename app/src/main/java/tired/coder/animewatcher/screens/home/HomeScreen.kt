@@ -1,5 +1,6 @@
 package tired.coder.animewatcher.screens.home
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
@@ -7,6 +8,11 @@ import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import tired.coder.animewatcher.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -43,7 +49,50 @@ fun HomeScreenWithoutViewModel(
     val animeList = homeScreenState.animeList
     Surface(color = MaterialTheme.colors.background) {
         Scaffold(topBar = {
-            CommonAppBar()
+            TopAppBar(
+                title = {
+                    if(!homeScreenState.isSearching)
+                    Text("Anime Watcher")
+                    else
+                        Row(modifier = Modifier.fillMaxWidth(),verticalAlignment = Alignment.CenterVertically){
+                            IconButton(onClick = {
+                                onStateChange(homeScreenState.copy(
+                                    isSearching = false,
+                                    searchText = ""
+                                ))
+                            }) {
+                                Icon(Icons.Filled.ArrowBack,contentDescription = null)
+                            }
+                            OutlinedTextField(value = homeScreenState.searchText, onValueChange = {
+                                onStateChange(homeScreenState.copy(
+                                    searchText = it
+                                ),)
+                            },colors =TextFieldDefaults.outlinedTextFieldColors(
+                                backgroundColor = Color.Transparent,
+                                cursorColor = Color.Blue,
+                                disabledBorderColor = Color.Transparent,
+                                errorBorderColor = Color.Transparent,
+                                focusedBorderColor = Color.Transparent,
+                                unfocusedBorderColor = Color.Transparent
+                            ),modifier = Modifier.weight(1F))
+                        }
+
+                },
+
+                actions = {
+
+                    IconButton(onClick = {
+                        onStateChange(homeScreenState.copy(
+                            isSearching = !homeScreenState.isSearching
+                        ))
+                    }) {
+                        Icon(if(!homeScreenState.isSearching) Icons.Filled.Search else Icons.Filled.Clear,contentDescription = null)
+                    }
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Icon(Icons.Filled.Menu,contentDescription = null)
+                    }
+                }
+            )
         }, bottomBar = {
             MyBottomAppBar(homeScreenState.currentIndex){
                 onStateChange(homeScreenState.copy(
@@ -53,9 +102,20 @@ fun HomeScreenWithoutViewModel(
         }) {
             Column(
                 modifier = Modifier
-                    .padding(it)
                     .fillMaxSize()
+                    .padding(it)
+
             ) {
+                if(homeScreenState.isSearching)
+                BackHandler() {
+                        onStateChange(
+                            homeScreenState.copy(
+                                isSearching = false,
+                                searchText = ""
+                            )
+                        )
+                    }
+                }
                 if (homeScreenState.isLoading)
                     Box(Modifier.fillMaxSize()) {
                         CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -74,14 +134,13 @@ fun HomeScreenWithoutViewModel(
 
                         }
                     }
-                Box(modifier = Modifier.height(20.dp))
             }
 
 
         }
     }
 
-}
+
 
 @Composable
 fun MyBottomAppBar(selectedItemIndex: Int, onBottomBarIconClicked: (Int) -> Unit) {

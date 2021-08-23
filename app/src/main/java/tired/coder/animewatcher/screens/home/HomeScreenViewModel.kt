@@ -12,6 +12,21 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor() : BaseViewModel<HomeScreenState>(HomeScreenState()) {
+    fun onSearchChanged(newText : String){
+
+        _screenLiveData.value = _screenLiveData.value!!.copy(
+            searchText = newText,
+
+        )
+        if(newText.trim().length>=3) {
+            _screenLiveData.postValue(_screenLiveData.value!!.copy(
+                isSearchingLoading = true ,
+            ))
+            viewModelScope.launch(Dispatchers.IO) {
+
+            }
+        }
+        }
     init{
         viewModelScope.launch(Dispatchers.IO) {
             val scraper = GogoAnimeScraper()

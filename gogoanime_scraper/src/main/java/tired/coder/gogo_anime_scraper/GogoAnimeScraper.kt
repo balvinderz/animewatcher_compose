@@ -27,6 +27,9 @@ class GogoAnimeScraper {
         }
         return recentAnimes
     }
+    suspend fun searchAnime(query : String ){
+
+    }
     suspend fun getVideoUrl(animeEpisodeUrl: String): VideoModel? {
         try {
             val animePageDocument = Jsoup.connect(animeEpisodeUrl).get()
