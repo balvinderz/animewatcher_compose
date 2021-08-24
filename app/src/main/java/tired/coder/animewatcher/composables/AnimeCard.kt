@@ -20,13 +20,13 @@ import tired.coder.animewatcher.ui.theme.AnimewatcherTheme
 import tired.coder.lib.models.RecentAnimeModel
 
 @Composable
-fun AnimeCard(recentAnimeModel: RecentAnimeModel, onClick: () -> Unit) {
+fun AnimeCard(recentAnimeModel: RecentAnimeModel, onClick: (RecentAnimeModel) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
             .clickable {
-                onClick()
+                onClick(recentAnimeModel)
             }
     ) {
 

@@ -22,6 +22,13 @@ class AnimeDetailsScreenViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val details =
                 gogoAnimeScraper.getAnimeDetails(savedStateHandle.get<String>("anime_page_link")!!)
+            if(details == null)
+                _toastLiveData.postValue("Something went while fetching anime details")
+            else
+            _screenLiveData.postValue(_screenLiveData.value!!.copy(
+                isLoading = false,
+                detailedAnimeModel = details
+            ))
         }
     }
 }

@@ -1,14 +1,18 @@
 package tired.coder.animewatcher.screens.home
 
+import android.net.Uri
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import tired.coder.animewatcher.ANIME_DETAIL_SCREEN
 import tired.coder.animewatcher.BaseViewModel
 import tired.coder.animewatcher.toRecentAnimeModelList
 import tired.coder.gogo_anime_scraper.GogoAnimeScraper
 import tired.coder.gogo_anime_scraper.enums.ReleaseType
+import tired.coder.lib.models.RecentAnimeModel
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,6 +38,13 @@ class HomeScreenViewModel @Inject constructor(
             }
         }
         }
+
+    fun onAnimeCardClicked(animeModel : RecentAnimeModel) {
+        if(_screenLiveData.value!!.showingSearchedList) {
+            _navigationLiveData.postValue("$ANIME_DETAIL_SCREEN/${Uri.encode(animeModel.episodeUrl)}")
+        }
+    }
+
     init{
         viewModelScope.launch(Dispatchers.IO) {
             val recentAnimes  = gogoAnimeScraper.getRecentReleases(ReleaseType.Dub)

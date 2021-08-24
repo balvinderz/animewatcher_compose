@@ -8,6 +8,7 @@ data class DetailedAnimeModel(
     val genre: String? = null ,
     val released : String? = null ,
     val status: String? = null ,
+    val imageUrl : String ="" ,
     val otherName: String? = null ,
     val startEpisode: Int? = null ,
     val endEpisode: Int? = null ,

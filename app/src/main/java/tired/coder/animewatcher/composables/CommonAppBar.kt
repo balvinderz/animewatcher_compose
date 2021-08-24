@@ -5,19 +5,19 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 
 @Composable
-fun CommonAppBar() {
+fun CommonAppBar(title : String,showNavIcon : Boolean = true,onBackPressed: ()-> Unit ) {
     TopAppBar(
         title = {
-            Text("Anime Watcher")
+            Text(title)
         },
-
-        actions = {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(Icons.Filled.Search,contentDescription = null)
+        navigationIcon = {
+            IconButton(onClick = { onBackPressed() }) {
+                Icon(Icons.Default.ArrowBack,contentDescription = null)
             }
         }
     )

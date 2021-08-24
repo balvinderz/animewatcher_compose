@@ -7,6 +7,7 @@ import org.jsoup.Jsoup
 import tired.coder.gogo_anime_scraper.enums.ReleaseType
 import tired.coder.gogo_anime_scraper.enums.toGogoAnimeType
 import tired.coder.gogo_anime_scraper.models.DetailedAnimeModel
+import tired.coder.gogo_anime_scraper.models.EpisodeModel
 import tired.coder.gogo_anime_scraper.models.SearchResultModel
 import tired.coder.gogo_anime_scraper.models.VideoModel
 import tired.coder.lib.models.RecentAnimeModel
@@ -42,9 +43,9 @@ class GogoAnimeScraper {
             for (searchResult in searchResults) {
                 val imageUrl = searchResult.select("img").first()!!.absUrl("src")
                 val name = searchResult.select("p.name > a").first()!!.text()
-                val pageLink = searchPageDocument.select("p.name > a").first()!!.absUrl("href")
+                val pageLink = searchResult.select("p.name > a").first()!!.absUrl("href")
                 val releasedYear =
-                    searchPageDocument.select("p.released").first()!!.text().split(":")[1].trim()
+                    searchResult.select("p.released").first()!!.text().split(":")[1].trim()
                         .toInt()
                 searchResultModels.add(SearchResultModel(name, imageUrl, pageLink, releasedYear))
             }
@@ -52,6 +53,25 @@ class GogoAnimeScraper {
 
         }
         return searchResultModels
+    }
+    suspend fun getEpisodeLinks(startEpisode : Int,endEpisode :Int ,animeId : Int) : List<EpisodeModel>{
+        val episodeList = mutableListOf<EpisodeModel>()
+        val url ="https://ajax.gogo-load.com/ajax/load-list-episode?ep_start=$startEpisode&ep_end=$endEpisode&id=$animeId&default_ep=0"
+        try {
+            val episodeDocument = Jsoup.connect(url).get()
+            val lis = episodeDocument.select("li")
+            for(li in lis){
+                episodeList.add(
+                    EpisodeModel(
+                    li.select("div.name").text().replace("EP","").trim().toInt(),
+                        li.select("a").first()!!.absUrl("href")
+                )
+                )
+            }
+        }catch (e: Exception){
+
+        }
+        return episodeList
     }
 
     suspend fun getVideoUrl(animeEpisodeUrl: String): VideoModel? {
@@ -111,7 +131,7 @@ class GogoAnimeScraper {
             val startEpisode =
                 lis.first()?.select("a")?.first()
                     ?.attr("ep_start")?.toInt() ?: 0
-
+            val imageUrl =  animeDetailPage.select("div.anime_info_body_bg >img").attr("src")
             val endEpisode =
                 lis.last()?.select("a")?.first()
                     ?.attr("ep_end")?.toInt() ?: 0
@@ -126,6 +146,7 @@ class GogoAnimeScraper {
                 genre,
                 released,
                 status,
+                imageUrl,
                 otherName,
                 startEpisode,
                 endEpisode = endEpisode
@@ -138,5 +159,5 @@ class GogoAnimeScraper {
 
 suspend fun main() {
     val scraper = GogoAnimeScraper()
-    scraper.getAnimeDetails("https://gogoanime.pe/category/one-piece")
+    scraper.getEpisodeLinks(0,45,7548)
 }

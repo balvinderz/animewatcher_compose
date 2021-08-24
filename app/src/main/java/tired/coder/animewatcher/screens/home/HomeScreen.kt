@@ -52,7 +52,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel = hi
     ,onSearchChanged = {
         viewModel.onSearchChanged(it)
         },onAnimeCardClicked = {
-
+            viewModel.onAnimeCardClicked(it)
         }) {
         viewModel.onStateChange(newState = it)
     }
@@ -148,7 +148,7 @@ fun HomeScreenWithoutViewModel(
                     ) {
                         items(animeList.size) {
                             AnimeCard(recentAnimeModel = animeList[it]) {
-                                onAnimeCardClicked(animeList[it])
+                                onAnimeCardClicked(it)
 //                                  navController.navigate("video_page")
                             }
 
