@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import tired.coder.animewatcher.BaseViewModel
+import tired.coder.animewatcher.toRecentAnimeModelList
 import tired.coder.gogo_anime_scraper.GogoAnimeScraper
 import tired.coder.gogo_anime_scraper.enums.ReleaseType
 import javax.inject.Inject
@@ -23,7 +24,11 @@ class HomeScreenViewModel @Inject constructor() : BaseViewModel<HomeScreenState>
                 isSearchingLoading = true ,
             ))
             viewModelScope.launch(Dispatchers.IO) {
-
+            val searchedList = GogoAnimeScraper().searchAnime(query = newText.trim())
+                _screenLiveData.postValue(_screenLiveData.value!!.copy(
+                    searchedAnimeList = mutableStateOf(searchedList.toRecentAnimeModelList()),
+                    isSearchingLoading = false,
+                ))
             }
         }
         }

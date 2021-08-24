@@ -13,4 +13,9 @@ open class BaseViewModel<T>(initialState: T) : ViewModel() {
     open fun onStateChange(newState : T){
         _screenLiveData.value =newState!!
     }
+    protected val _navigationLiveData = MutableLiveData<String?>()
+    val navigationLiveData : LiveData<String?> = _navigationLiveData
+    open fun clearData(){
+        _navigationLiveData.postValue(null)
+    }
 }

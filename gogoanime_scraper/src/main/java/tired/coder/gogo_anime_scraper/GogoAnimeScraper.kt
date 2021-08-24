@@ -6,6 +6,7 @@ import org.json.simple.JSONValue
 import org.jsoup.Jsoup
 import tired.coder.gogo_anime_scraper.enums.ReleaseType
 import tired.coder.gogo_anime_scraper.enums.toGogoAnimeType
+import tired.coder.gogo_anime_scraper.models.SearchResultModel
 import tired.coder.gogo_anime_scraper.models.VideoModel
 import tired.coder.lib.models.RecentAnimeModel
 
@@ -27,8 +28,24 @@ class GogoAnimeScraper {
         }
         return recentAnimes
     }
-    suspend fun searchAnime(query : String ){
+    suspend fun searchAnime(query : String ) : List<SearchResultModel>{
+       val searchResultModels = mutableListOf<SearchResultModel>()
+        try{
 
+            val searchPageDocument = Jsoup.connect("${baseUrl}search.html?keyword=$query").get()
+            val searchResults  = searchPageDocument.getElementsByClass("last_episodes").first()!!.getElementsByTag("ul").first()!!.getElementsByTag("li")
+            for( searchResult in searchResults){
+                val imageUrl = searchResult.select("img").first()!!.absUrl("src")
+                val name = searchResult.select("p.name > a").first()!!.text()
+                val pageLink = searchPageDocument.select("p.name > a").first()!!.absUrl("href")
+                val releasedYear = searchPageDocument.select("p.released").first()!!.text().split(":")[1].trim().toInt()
+                searchResultModels.add(SearchResultModel(name,imageUrl,pageLink,releasedYear))
+            }
+        }
+        catch (e: java.lang.Exception){
+
+        }
+        return searchResultModels
     }
     suspend fun getVideoUrl(animeEpisodeUrl: String): VideoModel? {
         try {
@@ -61,6 +78,5 @@ class GogoAnimeScraper {
 }
 suspend fun main(){
     val scraper = GogoAnimeScraper()
-    val animeList = scraper.getVideoUrl("https://gogoanime.pe/dragon-ball-kai-2014-episode-69")
-    print(animeList)
+    scraper.searchAnime("steins gate")
 }

@@ -14,12 +14,14 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import tired.coder.animewatcher.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -27,14 +29,31 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import tired.coder.animewatcher.composables.CommonAppBar
 import tired.coder.animewatcher.composables.AnimeCard
+import tired.coder.lib.models.RecentAnimeModel
+import java.util.*
 
 @Composable
 fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel = hiltViewModel()) {
     val homeScreenState = viewModel.screenLiveData.observeAsState()
+   val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(key1 = Unit){
+        viewModel.navigationLiveData.observe(lifecycleOwner){
+            it?.let {
+                navController.navigate(it)
+            }
+        }
+        onDispose {
+            viewModel.clearData()
+        }
+    }
     HomeScreenWithoutViewModel(
         navController = navController,
         homeScreenState = homeScreenState.value!!
-    ) {
+    ,onSearchChanged = {
+        viewModel.onSearchChanged(it)
+        },onAnimeCardClicked = {
+
+        }) {
         viewModel.onStateChange(newState = it)
     }
 }
@@ -44,8 +63,11 @@ fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel = hi
 fun HomeScreenWithoutViewModel(
     navController: NavController,
     homeScreenState: HomeScreenState,
-    onStateChange: (HomeScreenState) -> Unit
-) {
+    onSearchChanged : (String)-> Unit,
+    onAnimeCardClicked :(RecentAnimeModel)-> Unit,
+    onStateChange: (HomeScreenState) -> Unit,
+
+    ) {
     val animeList = homeScreenState.animeList
     Surface(color = MaterialTheme.colors.background) {
         Scaffold(topBar = {
@@ -64,9 +86,7 @@ fun HomeScreenWithoutViewModel(
                                 Icon(Icons.Filled.ArrowBack,contentDescription = null)
                             }
                             OutlinedTextField(value = homeScreenState.searchText, onValueChange = {
-                                onStateChange(homeScreenState.copy(
-                                    searchText = it
-                                ),)
+                                onSearchChanged(it)
                             },colors =TextFieldDefaults.outlinedTextFieldColors(
                                 backgroundColor = Color.Transparent,
                                 cursorColor = Color.Blue,
@@ -88,7 +108,7 @@ fun HomeScreenWithoutViewModel(
                     }) {
                         Icon(if(!homeScreenState.isSearching) Icons.Filled.Search else Icons.Filled.Clear,contentDescription = null)
                     }
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { }) {
                         Icon(Icons.Filled.Menu,contentDescription = null)
                     }
                 }
@@ -115,7 +135,6 @@ fun HomeScreenWithoutViewModel(
                             )
                         )
                     }
-                }
                 if (homeScreenState.isLoading)
                     Box(Modifier.fillMaxSize()) {
                         CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -129,11 +148,14 @@ fun HomeScreenWithoutViewModel(
                     ) {
                         items(animeList.size) {
                             AnimeCard(recentAnimeModel = animeList[it]) {
+                                onAnimeCardClicked(animeList[it])
 //                                  navController.navigate("video_page")
                             }
 
                         }
                     }
+                }
+
             }
 
 
@@ -144,7 +166,7 @@ fun HomeScreenWithoutViewModel(
 
 @Composable
 fun MyBottomAppBar(selectedItemIndex: Int, onBottomBarIconClicked: (Int) -> Unit) {
-    val labels = listOf<String>("Dub", "Sub", "Recent")
+    val labels = listOf("Dub", "Sub", "Recent")
     BottomAppBar() {
         for (i in labels.indices) {
             val label = labels[i]
@@ -161,7 +183,7 @@ fun MyBottomAppBar(selectedItemIndex: Int, onBottomBarIconClicked: (Int) -> Unit
                 alwaysShowLabel = true,
                 label = {
                     Text(
-                        label.toUpperCase(), style = if (i == selectedItemIndex) TextStyle(
+                        label.uppercase(Locale.getDefault()), style = if (i == selectedItemIndex) TextStyle(
                             color = Color.Blue,
                         ) else TextStyle(
                             color = Color.Black,

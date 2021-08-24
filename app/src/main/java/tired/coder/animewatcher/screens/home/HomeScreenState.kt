@@ -7,6 +7,7 @@ import tired.coder.lib.models.RecentAnimeModel
 data class HomeScreenState(
     val currentIndex : Int = 1,
  private   val dubAnimeList : State<List<RecentAnimeModel>> = mutableStateOf(emptyList()),
+ private   val searchedAnimeList : State<List<RecentAnimeModel>> = mutableStateOf(emptyList()),
   private  val subAnimeList : State<List<RecentAnimeModel>> = mutableStateOf(emptyList()),
    private val recentWatchedAnimeList : State<List<RecentAnimeModel>> = mutableStateOf(emptyList()),
    val isSearching : Boolean = false,
@@ -28,8 +29,14 @@ data class HomeScreenState(
             return true
         return false
     }
+    val showingSearchedList: Boolean
+    get(){
+        return searchText.length>=3 && isSearching
+    }
     val animeList: List<RecentAnimeModel>
     get(){
+        if(showingSearchedList)
+            return searchedAnimeList.value
         return when (currentIndex) {
             0 -> dubAnimeList.value
             1 -> subAnimeList.value
