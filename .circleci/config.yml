@@ -16,20 +16,20 @@ jobs:
     steps:
       # Checkout the code as the first step.
       - checkout
-
+      
       # The next step will run the unit tests
       - android/run-tests:
-          test-command: ./gradlew lint testDebug --continue
+          test-command: sudo chmod +x ./gradlew lint testDebug --continue
 
       # Then start the emulator and run the Instrumentation tests!
       - android/start-emulator-and-run-tests:
-          test-command: ./gradlew connectedDebugAndroidTest
+          test-command: sudo chmod +x ./gradlew connectedDebugAndroidTest
           system-image: system-images;android-25;google_apis;x86
 
       # And finally run the release build
       - run:
           name: Assemble release build
-          command: |
+          command: | sudo chmod +x
             ./gradlew assembleRelease    
 
 workflows:
