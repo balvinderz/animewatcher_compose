@@ -1,4 +1,4 @@
-package tired.coder.animewatcher.screens.home
+ package tired.coder.animewatcher.screens.home
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi

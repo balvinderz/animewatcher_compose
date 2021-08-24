@@ -12,7 +12,9 @@ import tired.coder.gogo_anime_scraper.enums.ReleaseType
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeScreenViewModel @Inject constructor() : BaseViewModel<HomeScreenState>(HomeScreenState()) {
+class HomeScreenViewModel @Inject constructor(
+    private val gogoAnimeScraper : GogoAnimeScraper
+) : BaseViewModel<HomeScreenState>(HomeScreenState()) {
     fun onSearchChanged(newText : String){
 
         _screenLiveData.value = _screenLiveData.value!!.copy(
@@ -24,7 +26,7 @@ class HomeScreenViewModel @Inject constructor() : BaseViewModel<HomeScreenState>
                 isSearchingLoading = true ,
             ))
             viewModelScope.launch(Dispatchers.IO) {
-            val searchedList = GogoAnimeScraper().searchAnime(query = newText.trim())
+            val searchedList = gogoAnimeScraper.searchAnime(query = newText.trim())
                 _screenLiveData.postValue(_screenLiveData.value!!.copy(
                     searchedAnimeList = mutableStateOf(searchedList.toRecentAnimeModelList()),
                     isSearchingLoading = false,
@@ -34,8 +36,7 @@ class HomeScreenViewModel @Inject constructor() : BaseViewModel<HomeScreenState>
         }
     init{
         viewModelScope.launch(Dispatchers.IO) {
-            val scraper = GogoAnimeScraper()
-            val recentAnimes  = scraper.getRecentReleases(ReleaseType.Dub)
+            val recentAnimes  = gogoAnimeScraper.getRecentReleases(ReleaseType.Dub)
 
             viewModelScope.launch(Dispatchers.Main) {
                 _screenLiveData.value = _screenLiveData.value!!.copy(
@@ -45,8 +46,7 @@ class HomeScreenViewModel @Inject constructor() : BaseViewModel<HomeScreenState>
             }
         }
         viewModelScope.launch(Dispatchers.IO) {
-            val scraper = GogoAnimeScraper()
-            val recentAnimes  = scraper.getRecentReleases(ReleaseType.Sub)
+            val recentAnimes  = gogoAnimeScraper.getRecentReleases(ReleaseType.Sub)
 
             viewModelScope.launch(Dispatchers.Main) {
                 _screenLiveData.value = _screenLiveData.value!!.copy(

@@ -15,7 +15,11 @@ open class BaseViewModel<T>(initialState: T) : ViewModel() {
     }
     protected val _navigationLiveData = MutableLiveData<String?>()
     val navigationLiveData : LiveData<String?> = _navigationLiveData
+    protected val _toastLiveData = MutableLiveData<String?>()
+    val toastLiveData : LiveData<String?> = _toastLiveData
     open fun clearData(){
         _navigationLiveData.postValue(null)
+        _toastLiveData.postValue(null)
     }
+
 }
