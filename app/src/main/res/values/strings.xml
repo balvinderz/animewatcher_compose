@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">Animewatcher</string>
+    <string name="app_name">Anime Watcher</string>
+    <string name="anime_list">Anime  List</string>
+    <string name="settings">Settings</string>
+    <string name="play_sound">Play Sound</string>
+    <string name="play">Play</string>
 </resources>

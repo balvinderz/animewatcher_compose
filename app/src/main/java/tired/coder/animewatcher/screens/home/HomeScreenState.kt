@@ -15,6 +15,7 @@ data class HomeScreenState(
     private val isDubLoading : Boolean = true,
    private val isSubLoading : Boolean =true ,
     val searchText : String  = "",
+    val isExpanded : Boolean = false,
    private val isRecentLoading : Boolean= true,
 ){
     val isLoading : Boolean

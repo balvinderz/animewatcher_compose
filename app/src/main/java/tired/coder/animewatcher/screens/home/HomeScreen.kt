@@ -9,10 +9,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import tired.coder.animewatcher.*
@@ -23,10 +20,13 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import tired.coder.animewatcher.R
 import tired.coder.animewatcher.composables.CommonAppBar
 import tired.coder.animewatcher.composables.AnimeCard
 import tired.coder.lib.models.RecentAnimeModel
@@ -74,7 +74,7 @@ fun HomeScreenWithoutViewModel(
             TopAppBar(
                 title = {
                     if(!homeScreenState.isSearching)
-                    Text("Anime Watcher")
+                    Text(stringResource(id = R.string.app_name))
                     else
                         Row(modifier = Modifier.fillMaxWidth(),verticalAlignment = Alignment.CenterVertically){
                             IconButton(onClick = {
@@ -108,8 +108,21 @@ fun HomeScreenWithoutViewModel(
                     }) {
                         Icon(if(!homeScreenState.isSearching) Icons.Filled.Search else Icons.Filled.Clear,contentDescription = null)
                     }
-                    IconButton(onClick = { }) {
-                        Icon(Icons.Filled.Menu,contentDescription = null)
+                    IconButton(onClick = {
+                        onStateChange(
+                            homeScreenState.copy(
+                                isExpanded = true
+                            )
+                        )
+                    }) {
+                        Icon(Icons.Filled.MoreVert,contentDescription = null)
+                    }
+                    MenuOptions(expanded = homeScreenState.isExpanded, navController = navController ) {
+                        onStateChange(
+                            homeScreenState.copy(
+                                isExpanded = false
+                            )
+                        )
                     }
                 }
             )
@@ -162,7 +175,23 @@ fun HomeScreenWithoutViewModel(
         }
     }
 
+@Composable
+fun MenuOptions(expanded : Boolean,navController: NavController , onDismissRequest :()-> Unit ){
 
+    DropdownMenu(expanded = expanded , onDismissRequest = {
+        onDismissRequest()
+    }) {
+        DropdownMenuItem(onClick = {
+        }) {
+            Text(stringResource(id = R.string.anime_list))
+        }
+        DropdownMenuItem(onClick = {
+            navController.navigate(SETTINGS)
+        }) {
+            Text(stringResource(id = R.string.settings))
+        }
+    }
+}
 
 @Composable
 fun MyBottomAppBar(selectedItemIndex: Int, onBottomBarIconClicked: (Int) -> Unit) {

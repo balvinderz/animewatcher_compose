@@ -16,7 +16,8 @@ private val DarkColorPalette = darkColors(
 private val LightColorPalette = lightColors(
     primary = Yellow,
     primaryVariant = Purple700,
-    secondary = Teal200,
+    secondary = Pink,
+    secondaryVariant = Pink,
     onPrimary = Color.Black
 
     /* Other default colors to override
@@ -42,7 +43,8 @@ fun AnimewatcherTheme(
 
     MaterialTheme(
         colors = colors,
-        typography = Typography,
+        typography =
+        Typography,
         shapes = Shapes,
         content = content
     )

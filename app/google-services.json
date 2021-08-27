@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "808831335973",
+    "project_id": "animewatcher-72fad",
+    "storage_bucket": "animewatcher-72fad.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:808831335973:android:61efdc57783c8b26cb89cc",
+        "android_client_info": {
+          "package_name": "tired.coder.animewatcher"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "808831335973-opp6158gv901v07bo0r8hgbughdes283.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaa79jCS2eZs7pisl3uBQOabEDK-1NZgU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "808831335973-opp6158gv901v07bo0r8hgbughdes283.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

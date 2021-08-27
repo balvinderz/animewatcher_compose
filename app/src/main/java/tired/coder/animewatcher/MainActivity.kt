@@ -1,5 +1,7 @@
 package tired.coder.animewatcher
 
+import android.media.MediaPlayer
+import android.media.MediaPlayer.OnCompletionListener
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,13 +17,19 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import tired.coder.animewatcher.screens.anime_details_screen.AnimeDetailsScreenWithViewModel
 import tired.coder.animewatcher.screens.home.HomeScreen
+import tired.coder.animewatcher.screens.settings.SettingsScreen
+import tired.coder.animewatcher.screens.settings.SettingsScreenWithViewModel
+import tired.coder.animewatcher.utils.PLAY_SOUND
+import tired.coder.animewatcher.utils.SharedPrefsHelper
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
+    @Inject lateinit var  prefsHelper: SharedPrefsHelper
     @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             val navController = rememberNavController()
             AnimewatcherTheme {
@@ -37,8 +45,21 @@ class MainActivity : ComponentActivity() {
                         })){
                         AnimeDetailsScreenWithViewModel(navController)
                     }
+                    composable(SETTINGS){
+                        SettingsScreenWithViewModel(navController = navController)
+                    }
                 }
             }
         }
+        if(prefsHelper.getBoolean(PLAY_SOUND,true)){
+            playTuturuSound()
+
+        }
+    }
+
+    private fun playTuturuSound() {
+        val mediaPlayer = MediaPlayer.create(this, R.raw.tuturu)
+        mediaPlayer.start()
+        mediaPlayer.setOnCompletionListener { mediaPlayer.release() }
     }
 }
