@@ -53,7 +53,7 @@ fun AnimeDetailsScreen(animeDetailsScreenState: AnimeDetailsScreenState,onBackPr
             else
                 LazyColumn(contentPadding = PaddingValues(16.dp),modifier = Modifier.fillMaxSize()){
                     item{
-                        Image(rememberCoilPainter(request = animeDetailsScreenState.detailedAnimeModel.imageUrl),contentDescription = null,modifier = Modifier
+                        Image(rememberCoilPainter(request = animeDetailsScreenState.backdropImage ?:  animeDetailsScreenState.detailedAnimeModel.imageUrl),contentDescription = null,modifier = Modifier
                             .fillMaxWidth()
                             .height(150.dp)
                             .clip(
@@ -87,8 +87,8 @@ fun AnimeDetailsScreen(animeDetailsScreenState: AnimeDetailsScreenState,onBackPr
                     item {
                         Text(animeDetailsScreenState.detailedAnimeModel.plotSummary ?: "",style = TextStyle(
                             color = Color.LightGray,
-                            fontSize = 12.sp,
-                            lineHeight = 16.sp,
+                            fontSize = 14.sp,
+                            lineHeight = 18.sp,
                             fontFamily = NotoSans
                         ),modifier = Modifier.padding(vertical = 8.dp) )
                     }

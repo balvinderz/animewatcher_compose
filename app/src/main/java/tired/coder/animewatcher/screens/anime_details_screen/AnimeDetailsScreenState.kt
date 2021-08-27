@@ -5,5 +5,6 @@ import tired.coder.gogo_anime_scraper.models.DetailedAnimeModel
 data class AnimeDetailsScreenState(
     val isLoading: Boolean = true,
     val animePageLink: String  = "",
+    val backdropImage : String? =null,
     val detailedAnimeModel: DetailedAnimeModel = DetailedAnimeModel()
 )
