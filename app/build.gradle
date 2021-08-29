@@ -21,6 +21,8 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+        buildConfigField "String", "TMDB_API_KEY", "\"${System.env.API_KEY}\""
+
     }
     configurations.all {
         resolutionStrategy.dependencySubstitution {

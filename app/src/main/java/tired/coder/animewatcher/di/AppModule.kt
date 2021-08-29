@@ -8,8 +8,10 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import tired.coder.animewatcher.BuildConfig
 import tired.coder.animewatcher.utils.SharedPrefsHelper
 import tired.coder.gogo_anime_scraper.GogoAnimeScraper
+import tired.coder.gogo_anime_scraper.TmdbHelper
 import javax.inject.Singleton
 
 @Module
@@ -27,5 +29,10 @@ object AppModule {
     @Singleton
     fun provideSharedPreferences(@ApplicationContext appContext: Context): SharedPreferences {
         return appContext.getSharedPreferences(SharedPrefsHelper.SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)
+    }
+    @Provides
+    @Singleton
+    fun provideTmdbHelper(): TmdbHelper {
+        return TmdbHelper(BuildConfig.TMDB_API_KEY)
     }
 }

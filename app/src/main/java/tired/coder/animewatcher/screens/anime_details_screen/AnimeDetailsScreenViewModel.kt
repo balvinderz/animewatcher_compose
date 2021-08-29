@@ -15,7 +15,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AnimeDetailsScreenViewModel @Inject constructor(
     private val gogoAnimeScraper: GogoAnimeScraper,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val tmdbHelper: TmdbHelper,
 ) : BaseViewModel<AnimeDetailsScreenState>(
     AnimeDetailsScreenState(
         animePageLink = savedStateHandle.get<String>("anime_page_link")!!
@@ -35,7 +36,7 @@ class AnimeDetailsScreenViewModel @Inject constructor(
                 try {
                     val image =
                         "https://www.themoviedb.org/t/p/w1920_and_h800_multi_faces/" + JSONObject(
-                            TmdbHelper().searchAnimeByName(details.name ?: "")
+                            tmdbHelper.searchAnimeByName(details.name ?: "")
                         ).getJSONArray("results").getJSONObject(0).getString("backdrop_path")
                     _screenLiveData.postValue(
                         _screenLiveData.value!!.copy(
