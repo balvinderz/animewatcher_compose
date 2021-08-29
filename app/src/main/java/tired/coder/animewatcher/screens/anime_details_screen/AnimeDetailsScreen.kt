@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -81,7 +84,9 @@ fun AnimeDetailsScreen(animeDetailsScreenState: AnimeDetailsScreenState,onBackPr
                                 color = Color.White,
                                 textAlign = TextAlign.Center,
                                 fontFamily = NotoSans
-                            ),modifier = Modifier.fillMaxWidth().padding(8.dp))
+                            ),modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp))
                         }
                     }
                     item {
@@ -92,7 +97,34 @@ fun AnimeDetailsScreen(animeDetailsScreenState: AnimeDetailsScreenState,onBackPr
                             fontFamily = NotoSans
                         ),modifier = Modifier.padding(vertical = 8.dp) )
                     }
+                    items(detailedAnimeModel.endEpisode ?:0 - (detailedAnimeModel.startEpisode  ?: 0)) {
+                        EpisodeCard(episodeNumber = it + (detailedAnimeModel.startEpisode ?: 0),
+                            imageUrl = animeDetailsScreenState.backdropImage
+                                ?: animeDetailsScreenState.detailedAnimeModel.imageUrl,
+                            modifier = Modifier.padding(8.dp)
+                        ) {
+
+                        }
+                    }
                 }
         }
+    }
+}
+@Composable
+fun EpisodeCard( episodeNumber : Int,imageUrl : String,modifier: Modifier = Modifier,onPlayClicked : ()-> Unit){
+    Card(modifier  = modifier
+        .height(50.dp)
+        .fillMaxWidth(),shape = RoundedCornerShape(8.dp)){
+        Row(modifier = Modifier
+            .fillMaxSize()
+            .padding(end = 8.dp),verticalAlignment = Alignment.CenterVertically){
+            Image(painter = rememberCoilPainter(request = imageUrl),contentScale = ContentScale.FillBounds,modifier = Modifier
+                .padding(4.dp)
+                .fillMaxHeight().size(40.dp),contentDescription = null)
+            Text("E${episodeNumber.toString().padStart(2,'0')}")
+            Spacer(modifier = Modifier.weight(1F))
+            Icon(Icons.Default.PlayArrow,tint = Color.Black,contentDescription = null)
+        }
+
     }
 }
