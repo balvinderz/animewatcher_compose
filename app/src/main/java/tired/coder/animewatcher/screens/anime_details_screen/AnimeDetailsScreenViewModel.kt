@@ -26,26 +26,24 @@ class AnimeDetailsScreenViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val details =
                 gogoAnimeScraper.getAnimeDetails(savedStateHandle.get<String>("anime_page_link")!!)
-            if(details == null)
+            if (details == null)
                 _toastLiveData.postValue("Something went while fetching anime details")
             else {
-                _screenLiveData.postValue(_screenLiveData.value!!.copy(
-                    isLoading = false,
-                    detailedAnimeModel = details
-                ))
-                try {
-                    val image =
-                        "https://www.themoviedb.org/t/p/w1920_and_h800_multi_faces/" + JSONObject(
-                            tmdbHelper.searchAnimeByName(details.name ?: "")
-                        ).getJSONArray("results").getJSONObject(0).getString("backdrop_path")
-                    _screenLiveData.postValue(
-                        _screenLiveData.value!!.copy(
-                            backdropImage = image
-                        )
+                _screenLiveData.postValue(
+                    _screenLiveData.value!!.copy(
+                        isLoading = false,
+                        detailedAnimeModel = details
                     )
-                }catch (e: Exception){
-
-                }
+                )
+                val episodes = gogoAnimeScraper.getEpisodeLinks(
+                    details.startEpisode ?: 0,
+                    details.endEpisode ?: 0, details.animeId?.toInt() ?: 0
+                )
+                _screenLiveData.postValue(
+                    _screenLiveData.value!!.copy(
+                        episodes = episodes
+                    )
+                )
             }
         }
     }

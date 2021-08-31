@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import tired.coder.animewatcher.ANIME_DETAIL_SCREEN
 import tired.coder.animewatcher.BaseViewModel
+import tired.coder.animewatcher.VIDEO_SCREEN
 import tired.coder.animewatcher.toRecentAnimeModelList
 import tired.coder.gogo_anime_scraper.GogoAnimeScraper
 import tired.coder.gogo_anime_scraper.enums.ReleaseType
@@ -42,6 +43,11 @@ class HomeScreenViewModel @Inject constructor(
     fun onAnimeCardClicked(animeModel : RecentAnimeModel) {
         if(_screenLiveData.value!!.showingSearchedList) {
             _navigationLiveData.postValue("$ANIME_DETAIL_SCREEN/${Uri.encode(animeModel.episodeUrl)}")
+        }
+        else
+        {
+            _navigationLiveData.postValue("$VIDEO_SCREEN/${Uri.encode(animeModel.episodeUrl)}/${animeModel.name}/${animeModel.episode.split(" ")[1].toInt()}")
+
         }
     }
 

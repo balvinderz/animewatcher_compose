@@ -27,7 +27,7 @@ class GogoAnimeScraper {
             val image = recentAnimeLi.getElementsByTag("img").first()!!.attr("src")
             val episodeUrl =
                 recentAnimeLi.getElementsByClass("img").first()!!.getElementsByTag("a").first()!!
-                    .absUrl("href")
+                    .absUrl("href").replace("https://ajax.gogo-load.com/",baseUrl)
             recentAnimes.add(RecentAnimeModel(name, episode, episodeUrl, image))
         }
         return recentAnimes
@@ -55,6 +55,7 @@ class GogoAnimeScraper {
         return searchResultModels
     }
     suspend fun getEpisodeLinks(startEpisode : Int,endEpisode :Int ,animeId : Int) : List<EpisodeModel>{
+        //TODO Implement paging here
         val episodeList = mutableListOf<EpisodeModel>()
         val url ="https://ajax.gogo-load.com/ajax/load-list-episode?ep_start=$startEpisode&ep_end=$endEpisode&id=$animeId&default_ep=0"
         try {
@@ -64,7 +65,7 @@ class GogoAnimeScraper {
                 episodeList.add(
                     EpisodeModel(
                     li.select("div.name").text().replace("EP","").trim().toInt(),
-                        li.select("a").first()!!.absUrl("href")
+                        li.select("a").first()!!.absUrl("href").replace("https://ajax.gogo-load.com/",baseUrl)
                 )
                 )
             }

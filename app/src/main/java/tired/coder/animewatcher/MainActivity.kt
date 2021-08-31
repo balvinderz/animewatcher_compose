@@ -19,6 +19,7 @@ import tired.coder.animewatcher.screens.anime_details_screen.AnimeDetailsScreenW
 import tired.coder.animewatcher.screens.home.HomeScreen
 import tired.coder.animewatcher.screens.settings.SettingsScreen
 import tired.coder.animewatcher.screens.settings.SettingsScreenWithViewModel
+import tired.coder.animewatcher.screens.video_screen.VideoScreenWithViewModel
 import tired.coder.animewatcher.utils.PLAY_SOUND
 import tired.coder.animewatcher.utils.SharedPrefsHelper
 import javax.inject.Inject
@@ -47,6 +48,22 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(SETTINGS){
                         SettingsScreenWithViewModel(navController = navController)
+                    }
+                    composable("$VIDEO_SCREEN/{episode_link}/{anime_name}/{episode_number}",arguments = listOf(
+                        navArgument(
+                            "episode_link"
+                        ){
+                            type = NavType.StringType
+                        }, navArgument(
+                            "anime_name"
+                        ){
+                            type = NavType.StringType
+                        }, navArgument(
+                            "episode_number"
+                        ){
+                            type = NavType.IntType
+                        },)){
+                        VideoScreenWithViewModel(navController,activity = this@MainActivity)
                     }
                 }
             }

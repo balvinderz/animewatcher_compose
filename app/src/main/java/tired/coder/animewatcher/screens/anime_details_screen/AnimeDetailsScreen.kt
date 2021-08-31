@@ -1,6 +1,8 @@
 package tired.coder.animewatcher.screens.anime_details_screen
 
+import android.net.Uri
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,105 +28,138 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.accompanist.coil.rememberCoilPainter
+import tired.coder.animewatcher.ANIME_DETAIL_SCREEN
 import tired.coder.animewatcher.R
+import tired.coder.animewatcher.VIDEO_SCREEN
 import tired.coder.animewatcher.composables.CommonAppBar
 import tired.coder.animewatcher.ui.theme.LightBlue
 import tired.coder.animewatcher.ui.theme.NotoSans
+import tired.coder.gogo_anime_scraper.models.EpisodeModel
 
 @Composable
-fun AnimeDetailsScreenWithViewModel(navController: NavController ,viewModel : AnimeDetailsScreenViewModel = hiltViewModel()){
-    val animeDetailsScreenState  = viewModel.screenLiveData.observeAsState()
-    AnimeDetailsScreen(animeDetailsScreenState = animeDetailsScreenState.value!!){
+fun AnimeDetailsScreenWithViewModel(
+    navController: NavController,
+    viewModel: AnimeDetailsScreenViewModel = hiltViewModel()
+) {
+    val animeDetailsScreenState = viewModel.screenLiveData.observeAsState()
+    AnimeDetailsScreen(animeDetailsScreenState = animeDetailsScreenState.value!!,{
         navController.navigateUp()
+    }) {
+        navController.navigate("$VIDEO_SCREEN/${Uri.encode(it.episodeUrl)}/${animeDetailsScreenState.value!!.detailedAnimeModel.name ?: ""}/${it.episodeNumber}")
     }
 }
+
 @Composable
-fun AnimeDetailsScreen(animeDetailsScreenState: AnimeDetailsScreenState,onBackPressed : ()-> Unit){
-    val   detailedAnimeModel = animeDetailsScreenState.detailedAnimeModel
+fun AnimeDetailsScreen(
+    animeDetailsScreenState: AnimeDetailsScreenState,
+    onBackPressed: () -> Unit,
+    onEpisodeChosen : (EpisodeModel)-> Unit,
+) {
     Scaffold(topBar = {
-        CommonAppBar(title = ""){
+        CommonAppBar(title = animeDetailsScreenState.detailedAnimeModel.name ?: "") {
             onBackPressed()
         }
     }) {
-        Column(modifier = Modifier
-            .padding(it)
-            .fillMaxSize()) {
-            if(animeDetailsScreenState.isLoading)
-                Box(modifier = Modifier.fillMaxSize()){
+        Column(
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize()
+        ) {
+            if (animeDetailsScreenState.isLoading)
+                Box(modifier = Modifier.fillMaxSize()) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
             else
-                LazyColumn(contentPadding = PaddingValues(16.dp),modifier = Modifier.fillMaxSize()){
-                    item{
-                        Image(rememberCoilPainter(request = animeDetailsScreenState.backdropImage ?:  animeDetailsScreenState.detailedAnimeModel.imageUrl),contentDescription = null,modifier = Modifier
-                            .fillMaxWidth()
-                            .height(150.dp)
-                            .clip(
-                                RoundedCornerShape(8.dp)
-                            ),contentScale = ContentScale.FillWidth)
-                    }
-                    item{
-                        Text(animeDetailsScreenState.detailedAnimeModel.name ?: "",style = MaterialTheme.typography.h3.copy(
-                            color = Color.Black,
-                            fontSize = 20.sp,
-                            lineHeight = 25.sp,
-                            textAlign = TextAlign.Center
-                        ),modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp))
-                    }
-                    item{
-                        Button(onClick = { /*TODO*/ },colors = ButtonDefaults.buttonColors(
-                            backgroundColor = LightBlue
-                        ),modifier = Modifier
-                            .fillMaxWidth() ,shape = RoundedCornerShape(4.dp)) {
-                            Text(stringResource(id = R.string.play),style = TextStyle(
-                                fontSize = 16.sp,
-                                lineHeight = 20.sp,
-                                color = Color.White,
-                                textAlign = TextAlign.Center,
-                                fontFamily = NotoSans
-                            ),modifier = Modifier
+                LazyColumn(
+                    contentPadding = PaddingValues(0.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    item {
+                        Box(
+                            modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp))
+                                .wrapContentHeight()
+                        ) {
+                            Image(
+                                painter = rememberCoilPainter(request = animeDetailsScreenState.detailedAnimeModel.imageUrl),
+                                modifier = Modifier
+                                    .padding(top = 50.dp)
+                                    .height(400.dp)
+
+                                    .fillMaxWidth()
+                                    .alpha(0.3F),
+                                contentDescription = null
+                            )
+                            Text(
+                                animeDetailsScreenState.detailedAnimeModel.plotSummary ?: "",
+                                style = TextStyle(
+                                    color = Color.Black,
+                                    fontSize = 15.sp,
+                                ),
+                                modifier = Modifier.padding(50.dp)
+                            )
                         }
+                    }
+
+                    item {
+
+                        Text(
+                            stringResource(id = R.string.episodes), style = TextStyle(
+                                color = Color.Black,
+                                fontSize = 24.sp,
+                                lineHeight = 32.sp,
+
+                                ), modifier = Modifier
+                                .padding(10.dp)
+                                .padding(top = 10.dp)
+                        )
                     }
                     item {
-                        Text(animeDetailsScreenState.detailedAnimeModel.plotSummary ?: "",style = TextStyle(
-                            color = Color.LightGray,
-                            fontSize = 14.sp,
-                            lineHeight = 18.sp,
-                            fontFamily = NotoSans
-                        ),modifier = Modifier.padding(vertical = 8.dp) )
+                        Divider(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(),
+                            color = Color(0xFFaaaaaa)
+                        )
                     }
-                    items(detailedAnimeModel.endEpisode ?:0 - (detailedAnimeModel.startEpisode  ?: 0)) {
-                        EpisodeCard(episodeNumber = it + (detailedAnimeModel.startEpisode ?: 0),
-                            imageUrl = animeDetailsScreenState.backdropImage
-                                ?: animeDetailsScreenState.detailedAnimeModel.imageUrl,
-                            modifier = Modifier.padding(8.dp)
+                    items(animeDetailsScreenState.episodes.size) {
+                        val episode =
+                            animeDetailsScreenState.episodes[animeDetailsScreenState.episodes.size - it - 1]
+                        EpisodeCard(
+                            name = animeDetailsScreenState.detailedAnimeModel.name ?: "",
+                            episode = episode
                         ) {
-
+                            onEpisodeChosen(it)
                         }
+
                     }
                 }
         }
     }
 }
-@Composable
-fun EpisodeCard( episodeNumber : Int,imageUrl : String,modifier: Modifier = Modifier,onPlayClicked : ()-> Unit){
-    Card(modifier  = modifier
-        .height(50.dp)
-        .fillMaxWidth(),shape = RoundedCornerShape(8.dp)){
-        Row(modifier = Modifier
-            .fillMaxSize()
-            .padding(end = 8.dp),verticalAlignment = Alignment.CenterVertically){
-            Image(painter = rememberCoilPainter(request = imageUrl),contentScale = ContentScale.FillBounds,modifier = Modifier
-                .padding(4.dp)
-                .fillMaxHeight().size(40.dp),contentDescription = null)
-            Text("E${episodeNumber.toString().padStart(2,'0')}")
-            Spacer(modifier = Modifier.weight(1F))
-            Icon(Icons.Default.PlayArrow,tint = Color.Black,contentDescription = null)
-        }
 
-    }
+@Composable
+fun EpisodeCard(
+    name: String,
+    episode: EpisodeModel,
+    modifier: Modifier = Modifier,
+    onClicked: (EpisodeModel) -> Unit
+) {
+    Text(
+        stringResource(
+            id = R.string.name_episode_placeholder,
+            name,
+            episode.episodeNumber
+        ), modifier = modifier
+            .padding(20.dp)
+            .fillMaxWidth()
+            .clickable {
+                onClicked(episode)
+            },
+        style = TextStyle(
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            color = Color.Gray
+        )
+    )
 }

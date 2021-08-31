@@ -4,4 +4,6 @@
     <string name="settings">Settings</string>
     <string name="play_sound">Play Sound</string>
     <string name="play">Play</string>
+    <string name="episodes">Episodes</string>
+    <string name="name_episode_placeholder">%s Episode %d</string>
 </resources>
