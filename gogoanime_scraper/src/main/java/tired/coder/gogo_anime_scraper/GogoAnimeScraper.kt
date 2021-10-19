@@ -13,7 +13,9 @@ import tired.coder.gogo_anime_scraper.models.VideoModel
 import tired.coder.lib.models.RecentAnimeModel
 
 class GogoAnimeScraper {
-    private val baseUrl = "https://gogoanime.pe/";
+    companion object{
+        const val baseUrl = "https://gogoanime.pe/";
+    }
     fun getRecentReleases(type: ReleaseType): List<RecentAnimeModel> {
         val recentAnimes = mutableListOf<RecentAnimeModel>()
         val gogoAnimePage =
@@ -75,13 +77,17 @@ class GogoAnimeScraper {
         return episodeList
     }
 
-    suspend fun getVideoUrl(animeEpisodeUrl: String): VideoModel? {
+    fun getVideoUrl(animeEpisodeUrl: String): VideoModel? {
         try {
             val animePageDocument = Jsoup.connect(animeEpisodeUrl).get()
             val streamUrl = (animePageDocument.getElementsByTag("iframe").first()!!.absUrl("src"))
             val streamPageDocument =
-                Jsoup.connect(streamUrl.replace("streaming.php", "loadserver.php")).get()
-            val scripts = streamPageDocument.getElementsByTag("script")
+                Jsoup.connect(streamUrl).get()
+            val multiServerUrl = streamPageDocument.getElementsByClass("linkserver").firstOrNull{
+                it.hasAttr("data-provider")
+            }?.attr("data-video") ?: return null
+            val multiServerDocument = Jsoup.connect(multiServerUrl).get()
+            val scripts = multiServerDocument.getElementsByTag("script")
 
             val script = scripts.firstOrNull {
                 (it.outerHtml().contains("playerInstance.setup"))
@@ -160,5 +166,5 @@ class GogoAnimeScraper {
 
 suspend fun main() {
     val scraper = GogoAnimeScraper()
-    scraper.getEpisodeLinks(0,45,7548)
+   scraper.getVideoUrl("https://gogoanime.pe/dr-slump-arale-chan-episode-103")
 }

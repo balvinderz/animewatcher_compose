@@ -15,6 +15,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,6 +39,11 @@ fun VideoScreenWithViewModel(
     VideoScreen(navController, screenState.value!!) {
         videoScreenViewModel.onStateChange(it)
     }
+    val flags = remember {activity.window.decorView.systemUiVisibility}
+    val statusBarColour = remember {activity.window.statusBarColor}
+    val orientation = remember {
+         activity.requestedOrientation
+    }
     LocalActivityResultRegistryOwner
     DisposableEffect(Unit) {
         activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE
@@ -55,7 +61,10 @@ fun VideoScreenWithViewModel(
         WindowCompat.setDecorFitsSystemWindows(activity.window, false)
 
         onDispose {
-            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            activity.requestedOrientation = orientation
+            WindowCompat.setDecorFitsSystemWindows(activity.window, true)
+            activity.window.decorView.systemUiVisibility = flags
+            activity.window.statusBarColor = statusBarColour
         }
     }
 }
@@ -71,6 +80,11 @@ fun VideoScreen(
             .fillMaxSize()
             .background(Color.Black)
     ) {
+
+        if(screenState.videoUrl == null)
+        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        else
+            ComposePlayer(screenState.videoUrl)
         Text(
             text = stringResource(
                 id = R.string.name_episode_placeholder,
@@ -82,15 +96,5 @@ fun VideoScreen(
                 lineHeight = 28.sp
             ), modifier = Modifier.padding(top = 20.dp, start = 20.dp)
         )
-        if(screenState.videoUrl == null)
-        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        else
-            Text(
-                text = screenState.videoUrl, style = TextStyle(
-                    color = Color.White,
-                    fontSize = 20.sp,
-                    lineHeight = 28.sp
-                ), modifier = Modifier.align(Alignment.Center)
-            )
     }
 }
