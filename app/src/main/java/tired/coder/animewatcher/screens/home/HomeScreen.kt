@@ -1,43 +1,39 @@
- package tired.coder.animewatcher.screens.home
+package tired.coder.animewatcher.screens.home
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import tired.coder.animewatcher.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import tired.coder.animewatcher.R
-import tired.coder.animewatcher.composables.CommonAppBar
-import tired.coder.animewatcher.composables.AnimeCard
+import tired.coder.animewatcher.SETTINGS
+import tired.coder.animewatcher.screens.home.composables.AnimeList
 import tired.coder.lib.models.RecentAnimeModel
 import java.util.*
 
 @Composable
 fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel = hiltViewModel()) {
     val homeScreenState = viewModel.screenLiveData.observeAsState()
-   val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(key1 = Unit){
-        viewModel.navigationLiveData.observe(lifecycleOwner){
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(key1 = Unit) {
+        viewModel.navigationLiveData.observe(lifecycleOwner) {
             it?.let {
                 navController.navigate(it)
             }
@@ -48,10 +44,9 @@ fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel = hi
     }
     HomeScreenWithoutViewModel(
         navController = navController,
-        homeScreenState = homeScreenState.value!!
-    ,onSearchChanged = {
-        viewModel.onSearchChanged(it)
-        },onAnimeCardClicked = {
+        homeScreenState = homeScreenState.value!!, onSearchChanged = {
+            viewModel.onSearchChanged(it)
+        }, onAnimeCardClicked = {
             viewModel.onAnimeCardClicked(it)
         }) {
         viewModel.onStateChange(newState = it)
@@ -63,8 +58,8 @@ fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel = hi
 fun HomeScreenWithoutViewModel(
     navController: NavController,
     homeScreenState: HomeScreenState,
-    onSearchChanged : (String)-> Unit,
-    onAnimeCardClicked :(RecentAnimeModel)-> Unit,
+    onSearchChanged: (String) -> Unit,
+    onAnimeCardClicked: (RecentAnimeModel) -> Unit,
     onStateChange: (HomeScreenState) -> Unit,
 
     ) {
@@ -73,28 +68,35 @@ fun HomeScreenWithoutViewModel(
         Scaffold(topBar = {
             TopAppBar(
                 title = {
-                    if(!homeScreenState.isSearching)
-                    Text(stringResource(id = R.string.app_name))
+                    if (!homeScreenState.isSearching)
+                        Text(stringResource(id = R.string.app_name))
                     else
-                        Row(modifier = Modifier.fillMaxWidth(),verticalAlignment = Alignment.CenterVertically){
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             IconButton(onClick = {
-                                onStateChange(homeScreenState.copy(
-                                    isSearching = false,
-                                    searchText = ""
-                                ))
+                                onStateChange(
+                                    homeScreenState.copy(
+                                        isSearching = false,
+                                        searchText = ""
+                                    )
+                                )
                             }) {
-                                Icon(Icons.Filled.ArrowBack,contentDescription = null)
+                                Icon(Icons.Filled.ArrowBack, contentDescription = null)
                             }
-                            OutlinedTextField(value = homeScreenState.searchText, onValueChange = {
-                                onSearchChanged(it)
-                            },colors =TextFieldDefaults.outlinedTextFieldColors(
-                                backgroundColor = Color.Transparent,
-                                cursorColor = Color.Blue,
-                                disabledBorderColor = Color.Transparent,
-                                errorBorderColor = Color.Transparent,
-                                focusedBorderColor = Color.Transparent,
-                                unfocusedBorderColor = Color.Transparent
-                            ),modifier = Modifier.weight(1F))
+                            OutlinedTextField(
+                                value = homeScreenState.searchText, onValueChange = {
+                                    onSearchChanged(it)
+                                }, colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    backgroundColor = Color.Transparent,
+                                    cursorColor = Color.Blue,
+                                    disabledBorderColor = Color.Transparent,
+                                    errorBorderColor = Color.Transparent,
+                                    focusedBorderColor = Color.Transparent,
+                                    unfocusedBorderColor = Color.Transparent
+                                ), modifier = Modifier.weight(1F)
+                            )
                         }
 
                 },
@@ -102,11 +104,16 @@ fun HomeScreenWithoutViewModel(
                 actions = {
 
                     IconButton(onClick = {
-                        onStateChange(homeScreenState.copy(
-                            isSearching = !homeScreenState.isSearching
-                        ))
+                        onStateChange(
+                            homeScreenState.copy(
+                                isSearching = !homeScreenState.isSearching
+                            )
+                        )
                     }) {
-                        Icon(if(!homeScreenState.isSearching) Icons.Filled.Search else Icons.Filled.Clear,contentDescription = null)
+                        Icon(
+                            if (!homeScreenState.isSearching) Icons.Filled.Search else Icons.Filled.Clear,
+                            contentDescription = null
+                        )
                     }
                     IconButton(onClick = {
                         onStateChange(
@@ -115,9 +122,12 @@ fun HomeScreenWithoutViewModel(
                             )
                         )
                     }) {
-                        Icon(Icons.Filled.MoreVert,contentDescription = null)
+                        Icon(Icons.Filled.MoreVert, contentDescription = null)
                     }
-                    MenuOptions(expanded = homeScreenState.isExpanded, navController = navController ) {
+                    MenuOptions(
+                        expanded = homeScreenState.isExpanded,
+                        navController = navController
+                    ) {
                         onStateChange(
                             homeScreenState.copy(
                                 isExpanded = false
@@ -127,10 +137,12 @@ fun HomeScreenWithoutViewModel(
                 }
             )
         }, bottomBar = {
-            MyBottomAppBar(homeScreenState.currentIndex){
-                onStateChange(homeScreenState.copy(
-                    currentIndex =  it
-                ))
+            MyBottomAppBar(homeScreenState.currentIndex) {
+                onStateChange(
+                    homeScreenState.copy(
+                        currentIndex = it
+                    )
+                )
             }
         }) {
             Column(
@@ -139,8 +151,8 @@ fun HomeScreenWithoutViewModel(
                     .padding(it)
 
             ) {
-                if(homeScreenState.isSearching)
-                BackHandler() {
+                if (homeScreenState.isSearching)
+                    BackHandler() {
                         onStateChange(
                             homeScreenState.copy(
                                 isSearching = false,
@@ -153,32 +165,19 @@ fun HomeScreenWithoutViewModel(
                         CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                     }
                 else
-                    LazyVerticalGrid(
-                        cells = GridCells.Fixed(
-                            2
-                        ), contentPadding = PaddingValues(5.dp) ,
-                        state = rememberLazyListState()
-                    ) {
-                        items(animeList.size) {
-                            AnimeCard(recentAnimeModel = animeList[it]) {
-                                onAnimeCardClicked(it)
-//                                  navController.navigate("video_page")
-                            }
-
-                        }
-                    }
-                }
-
+                    AnimeList(animeList = animeList, onItemClicked = onAnimeCardClicked)
             }
 
-
         }
+
+
     }
+}
 
 @Composable
-fun MenuOptions(expanded : Boolean,navController: NavController , onDismissRequest :()-> Unit ){
+fun MenuOptions(expanded: Boolean, navController: NavController, onDismissRequest: () -> Unit) {
 
-    DropdownMenu(expanded = expanded , onDismissRequest = {
+    DropdownMenu(expanded = expanded, onDismissRequest = {
         onDismissRequest()
     }) {
         DropdownMenuItem(onClick = {
@@ -203,7 +202,7 @@ fun MyBottomAppBar(selectedItemIndex: Int, onBottomBarIconClicked: (Int) -> Unit
                 onBottomBarIconClicked(i)
             }, icon = {
                 Icon(
-                    painter = painterResource(id = tired.coder.animewatcher.R.drawable.psyduck),
+                    painter = painterResource(id = R.drawable.psyduck),
                     contentDescription = null,
                     modifier = Modifier.size(24.dp)
 
@@ -212,7 +211,8 @@ fun MyBottomAppBar(selectedItemIndex: Int, onBottomBarIconClicked: (Int) -> Unit
                 alwaysShowLabel = true,
                 label = {
                     Text(
-                        label.uppercase(Locale.getDefault()), style = if (i == selectedItemIndex) TextStyle(
+                        label.uppercase(Locale.getDefault()),
+                        style = if (i == selectedItemIndex) TextStyle(
                             color = Color.Blue,
                         ) else TextStyle(
                             color = Color.Black,

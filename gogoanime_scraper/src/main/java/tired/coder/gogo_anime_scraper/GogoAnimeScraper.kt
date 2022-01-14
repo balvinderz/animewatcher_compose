@@ -114,7 +114,6 @@ class GogoAnimeScraper {
     }
 
     fun getAnimeDetails(url: String): DetailedAnimeModel? {
-        assert(url.startsWith(baseUrl))
         try {
             val animeDetailPage = Jsoup.connect(url).get()
             val name = animeDetailPage.select("div.anime_info_body_bg > h1").first()!!.text()
